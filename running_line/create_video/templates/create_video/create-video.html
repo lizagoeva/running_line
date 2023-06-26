@@ -1,0 +1,18 @@
+{% extends 'create_video/base.html' %}
+
+{% block title %}
+    Running line
+{% endblock %}
+
+{% block body %}
+    <h1>Your video will be generated soon...</h1>
+    <div>
+        <h3>Video params are:</h3>
+        <ul>
+            <li>text: {{ text }}</li>
+            <li>time (approximately): {{ duration }}</li>
+        </ul>
+    </div>
+    <p>Видео будет сохранено под именем {{ filename }}</p>
+    <p>Полный путь до файла: {{ filepath }}</p>
+{% endblock %}

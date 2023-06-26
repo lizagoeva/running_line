@@ -30,10 +30,16 @@ def name_videofile(filename='running_line.mp4'):
     return filename
 
 
-def create_video():
+def generate_video(text, duration):
+    """
+    Creates video with running line and saves it
+    :param text: String you want to put into the running line
+    :param duration: Approximate duration of video (in seconds)
+    :return: None
+    """
     video_name = name_videofile()
-    if TEXT_STRING:
-        text_size = cv2.getTextSize(TEXT_STRING, FONT, SCALE, THICKNESS)[0]  # text size in pixels
+    if text:
+        text_size = cv2.getTextSize(text, FONT, SCALE, THICKNESS)[0]  # text size in pixels
     else:
         print('Строка не может быть пустой')
         return
@@ -43,10 +49,10 @@ def create_video():
     out = cv2.VideoWriter(video_name, fourcc, fps, SIZE)
 
     x = SIZE[0]
-    x_shift = ceil((SIZE[0] + text_size[0]) / fps / VIDEO_DURATION)
+    x_shift = ceil((SIZE[0] + text_size[0]) / fps / duration)
     while x > -text_size[0]:
         img = np.zeros((SIZE[1], SIZE[0]), dtype=np.uint8)
-        cv2.putText(img, TEXT_STRING, (x, 80), FONT, SCALE, TEXT_COLOR, THICKNESS)
+        cv2.putText(img, text, (x, 80), FONT, SCALE, TEXT_COLOR, THICKNESS)
         cv2.imwrite('background.jpg', img)
         img = cv2.imread('background.jpg')
         out.write(img)
@@ -61,4 +67,4 @@ def create_video():
         pass
 
 
-create_video()
+generate_video(text=TEXT_STRING, duration=VIDEO_DURATION)
