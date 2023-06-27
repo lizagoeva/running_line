@@ -1,0 +1,21 @@
+{% extends 'create_video/base.html' %}
+
+{% block title %}
+    Running line database
+{% endblock %}
+
+{% block body %}
+    <h3>Request database:</h3>
+    <ol>
+        {% for req in video_creation_requests %}
+            <li>
+                <span>
+                    File {{ req.video_filename }}
+                    with text "{{ req.text_in_video }}"
+                    and duration {{ req.video_duration }} seconds
+                    was created at {{ req.creation_time }}
+                </span>
+            </li>
+        {% endfor %}
+    </ol>
+{% endblock %}

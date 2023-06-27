@@ -4,6 +4,7 @@ import os
 import numpy as np
 from django.http import HttpRequest
 from django.shortcuts import render
+from .models import VideoRequests
 
 
 def index_page(request: HttpRequest):
@@ -12,13 +13,11 @@ def index_page(request: HttpRequest):
 
 
 def video_making_func(text, duration):
-    print(f'duration = {duration}')
     font = cv2.FONT_HERSHEY_COMPLEX
     scale, thickness, size, color = 3, 3, (100, 100), (255, 255, 255)
     video_name = 'running_line.mp4'
     if text:
         text_size = cv2.getTextSize(text, font, scale, thickness)[0]  # text size in pixels
-        print(f'text_size = {text_size}')
     else:
         print('Строка не может быть пустой')
         return
@@ -29,7 +28,6 @@ def video_making_func(text, duration):
 
     x = size[0]
     x_shift = ceil((size[0] + text_size[0]) / fps / duration)
-    print(f'x_shift = {x_shift}')
     while x > -text_size[0]:
         img = np.zeros((size[1], size[0]), dtype=np.uint8)
         cv2.putText(img, text, (x, 80), font, scale, color, thickness)
@@ -47,12 +45,15 @@ def video_making_func(text, duration):
 
 
 def create_video(request: HttpRequest):
-    text = request.GET.get("text")
-    duration = request.GET.get("time")
+    text_was_changed, duration_was_changed = True, True
+    text = request.GET.get('text')
+    duration = request.GET.get('time')
     if not text:  # setting default values
         text = 'glad to see you'
+        text_was_changed = False
     if not duration or not duration.isdigit():
         duration = 3
+        duration_was_changed = False
     duration = int(duration)
     filename = video_making_func(text=text, duration=duration)
     context = {
@@ -61,4 +62,18 @@ def create_video(request: HttpRequest):
         'filename': filename,
         'filepath': os.path.abspath(filename),
     }
+    VideoRequests.objects.create(
+        text_in_video=text,
+        custom_text=text_was_changed,
+        video_duration=duration,
+        custom_duration=duration_was_changed,
+        video_filename=filename,
+    )
     return render(request, 'create_video/create-video.html', context=context)
+
+
+def show_database(request: HttpRequest):
+    context = {
+        'video_creation_requests': VideoRequests.objects.all(),
+    }
+    return render(request, 'create_video/show-database.html', context=context)
