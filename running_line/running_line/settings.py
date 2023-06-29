@@ -27,6 +27,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'colab.research.google.com',
+    '.ngrok-free.app',
 ]
 
 # Application definition
