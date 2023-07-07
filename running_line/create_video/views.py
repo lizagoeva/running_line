@@ -2,7 +2,7 @@ from math import ceil
 import cv2
 import os
 import numpy as np
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from .models import VideoRequests
 
@@ -44,6 +44,12 @@ def video_making_func(text, duration):
     return video_name
 
 
+def downloader(filename):
+    response = HttpResponse(open(filename, "rb"), content_type='video/mp4')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
+
+
 def create_video(request: HttpRequest):
     text_was_changed, duration_was_changed = True, True
     text = request.GET.get('text')
@@ -69,7 +75,8 @@ def create_video(request: HttpRequest):
         custom_duration=duration_was_changed,
         video_filename=filename,
     )
-    return render(request, 'create_video/create-video.html', context=context)
+    return downloader(filename)
+    # return render(request, 'create_video/create-video.html', context=context)
 
 
 def show_database(request: HttpRequest):
